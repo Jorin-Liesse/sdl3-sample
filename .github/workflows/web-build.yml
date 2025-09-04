@@ -98,10 +98,9 @@ jobs:
 
       - name: Prepare icon folder
         run: |
-          # Create the folder path for the icon
-          mkdir -p "_site/${{ env.ICON_PATH }}"
-          # Copy the icon file into that folder
-          cp "${{ env.ICON_PATH }}" "_site/${{ env.ICON_PATH }}/"
+          ICON_DIR=$(dirname "${{ env.ICON_PATH }}")
+          mkdir -p "_site/$ICON_DIR"
+          cp "${{ env.ICON_PATH }}" "_site/$ICON_DIR/"
       
       - name: Upload
         uses: actions/upload-pages-artifact@v3
