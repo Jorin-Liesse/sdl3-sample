@@ -44,6 +44,21 @@ PRIVATE
     src/main.cpp
     src/iosLaunchScreen.storyboard
 )
+
+# Automatically include all .cpp files in src/
+file(GLOB SOURCES "src/*.cpp")
+
+# Add manually extra files (e.g., platform-specific or non-.cpp files)
+set(EXTRA_SOURCES
+    src/iosLaunchScreen.storyboard
+)
+
+# Combine them
+list(APPEND SOURCES ${EXTRA_SOURCES})
+
+# Add them to your target
+target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
+
 # What is iosLaunchScreen.storyboard? This file describes what Apple's mobile platforms
 # should show the user while the application is starting up. If you don't include one,
 # then you get placed in a compatibility mode that does not allow HighDPI.
