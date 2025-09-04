@@ -189,15 +189,15 @@ endif()
 
 # Dealing with assets
 # We have some non-code resources that our application needs in order to work. How we deal with those differs per platform.
-set(ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/assets")
+set(ASSETS_DIR ${JSON_ASSETS_PATH})
 
 # Collect all files in the assets folder (recursively)
-file(GLOB_RECURSE ASSETS "${ASSETS_DIR}/*")
+file(GLOB_RECURSE ASSETS ${JSON_ASSETS_PATH}/*)
 
 if (APPLE)
     # On Apple, put everything into the app bundle Resources folder
     foreach(asset ${ASSETS})
-        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
         target_sources(${EXECUTABLE_NAME} PRIVATE ${asset})
         set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
     endforeach()
@@ -205,7 +205,7 @@ if (APPLE)
 elseif(EMSCRIPTEN)
     # Preload all assets into the web build
     foreach(asset ${ASSETS})
-        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
         target_link_libraries(${EXECUTABLE_NAME} PRIVATE
             "--preload-file \"${asset}@/${relpath}\""
         )
@@ -220,7 +220,7 @@ else()
     endif()
 
     foreach(asset ${ASSETS})
-        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
 
         if (ANDROID)
             set(outname "${MOBILE_ASSETS_DIR}/${relpath}")
@@ -230,18 +230,20 @@ else()
 
         # Ensure target directory exists
         add_custom_command(POST_BUILD
-            TARGET "${EXECUTABLE_NAME}"
+            TARGET ${EXECUTABLE_NAME}
             COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/${relpath}"
         )
 
         # Copy asset file
         add_custom_command(POST_BUILD
-            TARGET "${EXECUTABLE_NAME}"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${asset}" "${outname}"
-            DEPENDS "${asset}"
+            TARGET ${EXECUTABLE_NAME}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} "${outname}"
+            DEPENDS ${asset}
         )
     endforeach()
 endif()
+
+#----#
 
 
 # set some extra configs for each platform
