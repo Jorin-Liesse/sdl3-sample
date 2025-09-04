@@ -79,7 +79,7 @@ if(MSVC)
 endif()
 
 # Set the name of the executable
-set(EXECUTABLE_NAME ${PROJECT_NAME})
+set(EXECUTABLE_NAME ${JSON_PROJECT})
 
 # Create an executable or a shared library based on the platform and add our sources to it
 if (ANDROID)
@@ -102,7 +102,7 @@ if(ANDROID)
     set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
 else()
     set(EXTRA_SOURCES
-        resources/iosLaunchScreen.storyboard
+        resources/iosLaunchScreen.storyboard #----#
     )
 endif()
 
@@ -114,6 +114,8 @@ list(REMOVE_ITEM SOURCES ${JSON_SOURCE_PATH}/main.cpp)
 
 # Ensure main.cpp is first (important for Android)
 list(INSERT SOURCES 0 ${JSON_SOURCE_PATH}/main.cpp)
+
+#----#
 
 # Add them to your target
 target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
