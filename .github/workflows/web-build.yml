@@ -1,4 +1,4 @@
-name: Build Sample For Web
+name: Build for Web
 on: [workflow_dispatch]
 
 jobs:

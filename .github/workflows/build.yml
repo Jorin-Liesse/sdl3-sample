@@ -1,4 +1,4 @@
-name: Build Sample
+name: Build for Desktop
 on: [workflow_dispatch]
 
 jobs:
