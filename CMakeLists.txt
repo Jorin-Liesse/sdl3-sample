@@ -136,7 +136,7 @@ endif()
 if (APPLE)
     # on Apple targets, the application bundle has a "resources" subfolder where we can place our assets.
     # SDL_GetBasePath() gives us easy access to that location.
-    set(input_root "${CMAKE_CURRENT_LIST_DIR}/src")
+    set(input_root "${CMAKE_CURRENT_LIST_DIR}/assets")
     macro(add_resource FILE)
         file(RELATIVE_PATH relpath "${input_root}" "${FILE}")
         get_filename_component(relpath "${relpath}" DIRECTORY)
@@ -174,7 +174,7 @@ else()
         endif()
         add_custom_command(POST_BUILD
             TARGET "${EXECUTABLE_NAME}"
-		    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/src/${filename}" "${outname}"
+		    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/assets/${filename}" "${outname}"
 		    DEPENDS "${filename}"
 	    )
     endmacro()
