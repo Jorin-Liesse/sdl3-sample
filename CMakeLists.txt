@@ -36,6 +36,8 @@ else()
 	add_executable(${EXECUTABLE_NAME})
 endif()
 
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
 # Add your sources to the target
 target_sources(${EXECUTABLE_NAME} 
 PRIVATE 
