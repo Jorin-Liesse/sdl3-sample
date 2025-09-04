@@ -47,29 +47,18 @@ target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/includ
 #     src/iosLaunchScreen.storyboard
 # )
 
-# Automatically include all .cpp files in src/
-file(GLOB SOURCES "src/*.cpp")
-
-# Add manually extra files (e.g., platform-specific or non-.cpp files)
-set(EXTRA_SOURCES
-    src/iosLaunchScreen.storyboard
-)
-
-# Combine them
-list(APPEND SOURCES ${EXTRA_SOURCES})
-
-list(INSERT SOURCES 0 "src/main.cpp")
-
-# Add them to your target
-target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 
 # Automatically include all .cpp files in src/
 file(GLOB SOURCES "src/*.cpp")
 
 # Add manually extra files (e.g., platform-specific or non-.cpp files)
-set(EXTRA_SOURCES
-    src/iosLaunchScreen.storyboard
-)
+if(ANDROID)
+    set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
+else()
+    set(EXTRA_SOURCES
+        src/iosLaunchScreen.storyboard
+    )
+endif()
 
 # Combine them
 list(APPEND SOURCES ${EXTRA_SOURCES})
