@@ -16,7 +16,6 @@
     ],
 
     "icon-path": "assets/icon.png",
-
     "assets-path": "assets",
     "resources-path": "resources",
     "include-path": "include",
