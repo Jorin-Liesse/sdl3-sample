@@ -6,6 +6,8 @@
 /[Dd]ist/
 /[Oo]ut/
 
+/[Uu]ninclude/
+
 # /SDL/
 # /SDL_image/
 # /SDL_mixer/

@@ -1,5 +1,59 @@
 cmake_minimum_required(VERSION 3.16)
 
+#-------------------------------------------------------
+
+file(READ "${CMAKE_CURRENT_LIST_DIR}/assets/info.json" JSON_CONTENT)
+
+# Extract project name
+string(REGEX MATCH "\"project\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_NAME ${JSON_CONTENT})
+set(PROJECT ${CMAKE_MATCH_1})
+
+# Extract company name
+string(REGEX MATCH "\"company\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_COMPANY ${JSON_CONTENT})
+set(COMPANY ${CMAKE_MATCH_1})
+
+# Extract version
+string(REGEX MATCH "\"version\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_VERSION ${JSON_CONTENT})
+set(VERSION ${CMAKE_MATCH_1})
+
+# Extract description
+string(REGEX MATCH "\"description\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_DESCRIPTION ${JSON_CONTENT})
+set(DESCRIPTION ${CMAKE_MATCH_1})
+
+# Extract author
+string(REGEX MATCH "\"author\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_AUTHOR ${JSON_CONTENT})
+set(AUTHOR ${CMAKE_MATCH_1})
+
+# Extract license
+string(REGEX MATCH "\"license\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_LICENSE ${JSON_CONTENT})
+set(LICENSE ${CMAKE_MATCH_1})
+
+# Extract credits
+string(REGEX MATCH "\"credits\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_CREDITS ${JSON_CONTENT})
+set(CREDITS ${CMAKE_MATCH_1})
+
+# Extract icon-path
+string(REGEX MATCH "\"icon-path\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_ICON_PATH ${JSON_CONTENT})
+set(ICON_PATH "${CMAKE_CURRENT_LIST_DIR}/${CMAKE_MATCH_1}")
+
+# Extract assets-path
+string(REGEX MATCH "\"assets-path\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_ASSETS_PATH ${JSON_CONTENT})
+set(ASSETS_PATH "${CMAKE_CURRENT_LIST_DIR}/${CMAKE_MATCH_1}")
+
+# Extract resources-path
+string(REGEX MATCH "\"resources-path\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_RESOURCES_PATH ${JSON_CONTENT})
+set(RESOURCES_PATH "${CMAKE_CURRENT_LIST_DIR}/${CMAKE_MATCH_1}")
+
+# Extract include-path
+string(REGEX MATCH "\"include-path\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_INCLUDE_PATH ${JSON_CONTENT})
+set(INCLUDE_PATH "${CMAKE_CURRENT_LIST_DIR}/${CMAKE_MATCH_1}")
+
+# Extract source-path
+string(REGEX MATCH "\"source-path\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_SOURCE_PATH ${JSON_CONTENT})
+set(SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/${CMAKE_MATCH_1}")
+
+#-------------------------------------------------------
+
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
@@ -9,7 +63,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE INTERNAL "")
 
 # Declare the project
-project(sdl-min)
+project(${PROJECT} VERSION ${VERSION} LANGUAGES CXX)
 
 if ((APPLE AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin") OR EMSCRIPTEN)
     set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")    # Disable shared builds on platforms where it does not make sense to use them
@@ -25,7 +79,7 @@ if(MSVC)
 endif()
 
 # Set the name of the executable
-set(EXECUTABLE_NAME ${PROJECT_NAME})
+set(EXECUTABLE_NAME ${PROJECT})
 
 # Create an executable or a shared library based on the platform and add our sources to it
 if (ANDROID)
@@ -38,17 +92,17 @@ else()
 	add_executable(${EXECUTABLE_NAME})
 endif()
 
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${INCLUDE_PATH})
 
 # Automatically include all .cpp files in src/
-file(GLOB SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp")
+file(GLOB SOURCES "${SOURCE_PATH}/*.cpp")
 
 # Add manually extra files (e.g., platform-specific or non-.cpp files)
 if(ANDROID)
     set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
 else()
     set(EXTRA_SOURCES
-        resources/iosLaunchScreen.storyboard
+        ${SOURCE_PATH}/iosLaunchScreen.storyboard
     )
 endif()
 
@@ -56,10 +110,10 @@ endif()
 list(APPEND SOURCES ${EXTRA_SOURCES})
 
 # Remove main.cpp if it’s already in the list
-list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+list(REMOVE_ITEM SOURCES "${SOURCE_PATH}/main.cpp")
 
 # Ensure main.cpp is first (important for Android)
-list(INSERT SOURCES 0 "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+list(INSERT SOURCES 0 "${SOURCE_PATH}/main.cpp")
 
 # Add them to your target
 target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
@@ -73,7 +127,7 @@ target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 # To get an app icon on Apple platforms, add it to your executable.
 # Afterward, the image file in Info.plist.in.
 if(APPLE)
-    target_sources("${EXECUTABLE_NAME}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
+    target_sources("${EXECUTABLE_NAME}" PRIVATE "${ICON_PATH}")
 endif()
 
 # Set C++ version
@@ -133,15 +187,14 @@ endif()
 
 # Dealing with assets
 # We have some non-code resources that our application needs in order to work. How we deal with those differs per platform.
-set(ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/assets")
 
 # Collect all files in the assets folder (recursively)
-file(GLOB_RECURSE ASSETS "${ASSETS_DIR}/*")
+file(GLOB_RECURSE ASSETS "${ASSETS_PATH}/*")
 
 if (APPLE)
     # On Apple, put everything into the app bundle Resources folder
     foreach(asset ${ASSETS})
-        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        file(RELATIVE_PATH relpath "${ASSETS_PATH}" "${asset}")
         target_sources(${EXECUTABLE_NAME} PRIVATE ${asset})
         set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
     endforeach()
@@ -149,7 +202,7 @@ if (APPLE)
 elseif(EMSCRIPTEN)
     # Preload all assets into the web build
     foreach(asset ${ASSETS})
-        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        file(RELATIVE_PATH relpath "${ASSETS_PATH}" "${asset}")
         target_link_libraries(${EXECUTABLE_NAME} PRIVATE
             "--preload-file \"${asset}@/${relpath}\""
         )
@@ -164,7 +217,7 @@ else()
     endif()
 
     foreach(asset ${ASSETS})
-        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        file(RELATIVE_PATH relpath "${ASSETS_PATH}" "${asset}")
 
         if (ANDROID)
             set(outname "${MOBILE_ASSETS_DIR}/${relpath}")
@@ -189,9 +242,9 @@ endif()
 
 
 # set some extra configs for each platform
-set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
+set(RESOURCE_FILES "${ICON_PATH}")
 if(IOS)
-    set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/resources/iosLaunchScreen.storyboard;${CMAKE_CURRENT_LIST_DIR}/assets/logo.png") # make the splash screen show up on iOS
+    set(RESOURCE_FILES "${RESOURCES_PATH}/iosLaunchScreen.storyboard;${ICON_PATH}") # make the splash screen show up on iOS
 endif()
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
@@ -199,7 +252,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
     # Set the Info.plist file for Apple Mobile platforms. Without this file, your app
     # will not launch. 
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in"
+    MACOSX_BUNDLE_INFO_PLIST "${RESOURCES_PATH}/Info.plist.in"
 
     # in Xcode, create a Scheme in the schemes dropdown for the app.
     XCODE_GENERATE_SCHEME TRUE

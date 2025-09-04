@@ -1,0 +1,24 @@
+{
+    "project": "Sapodilla Games Engine",
+    "company": "Sapodilla Games",
+    "version": "0.1.0",
+    "description": "A simple game engine using SDL3",
+    "author": "Jorin Liesse",
+    "license": "MIT",
+    "credits": [
+        {
+            "name": "",
+            "author": "",
+            "website": "",
+            "license": "",
+            "link": ""
+        }
+    ],
+
+    "icon-path": "assets/icon.png",
+
+    "assets-path": "assets",
+    "resources-path": "resources",
+    "include-path": "include",
+    "source-path": "src"
+}
