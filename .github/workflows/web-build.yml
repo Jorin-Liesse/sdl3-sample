@@ -24,7 +24,7 @@ jobs:
       - name: Prepare for upload
         run: |
            mkdir _site
-           mv build/*.js build/*.css build/*.data build/*.wasm _site/ 2>/dev/null || true
+           mv build/*.html build/*.js build/*.css build/*.data build/*.wasm _site/ 2>/dev/null || true
           #  mv build/sdl-min.html _site/index.html
           #  mv build/sdl-* _site/
       - name: Fix permissions

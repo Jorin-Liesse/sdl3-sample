@@ -15,15 +15,23 @@ jobs:
           - uses: actions/checkout@v4
             with:
                 submodules: recursive
+          
+          - name: Set project env vars
+            run: |
+              PROJECT_NAME=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              PROJECT_VERSION=$(python3 -c "import json; print(json.load(open('assets/info.json'))['version'])")
+              echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+              echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+
           - name: Configure
             run: cmake -DCMAKE_SYSTEM_NAME=${{ matrix.target }} -DCMAKE_SYSTEM_VERSION="10.0" -A${{ matrix.arch }} -S . -B build
           - name: Build
-            run: cmake --build build --target sdl-min --config Release
+            run: cmake --build build --target ${{ env.PROJECT_NAME }} --config Release
           - name: Upload Build
             uses: actions/upload-artifact@v4
             if: ${{ matrix.target != 'WindowsStore' }}
             with: 
-                name: sdl-min-${{ matrix.target }}-${{ matrix.arch }}
+                name: ${{ env.PROJECT_NAME }}-${{ matrix.target }}-${{ matrix.arch }}
                 path: |
                     build/Release/*.exe
                     build/Release/*.dll
@@ -38,6 +46,14 @@ jobs:
           - uses: actions/checkout@v4
             with:
                 submodules: recursive
+
+          - name: Set project env vars
+            run: |
+              PROJECT_NAME=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              PROJECT_VERSION=$(python3 -c "import json; print(json.load(open('assets/info.json'))['version'])")
+              echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+              echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+
           - name: Install Dependencies
             run: |
                 sudo apt update
@@ -45,13 +61,13 @@ jobs:
           - name: Configure
             run: cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -S . -B build
           - name: Build
-            run: cmake --build build --target sdl-min --config Release
+            run: cmake --build build --target ${{ env.PROJECT_NAME }} --config Release
           - name: Upload Build
             uses: actions/upload-artifact@v4
             with: 
-                name: sdl-min-Linux
+                name: ${{ env.PROJECT_NAME }}-Linux
                 path: |
-                    build/Release/sdl-min
+                    build/Release/${{ env.PROJECT_NAME }}
                     build/Release/*.so
                     build/Release/*.ttf
                     build/Release/*.ogg
@@ -73,12 +89,20 @@ jobs:
             uses: maxim-lobanov/setup-xcode@v1.6.0
             with:
                 xcode-version: "16.1"
+
+          - name: Set project env vars
+            run: |
+              PROJECT_NAME=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              PROJECT_VERSION=$(python3 -c "import json; print(json.load(open('assets/info.json'))['version'])")
+              echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+              echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+
           - name: Configure
             run: cmake -G "Xcode" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO -DCMAKE_SYSTEM_NAME=${{ matrix.target }} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build
           - name: Build
             run: cmake --build build --target install --config Release
           - name: Ad-Hoc Codesign
-            run: codesign -s - -f "./build/release/sdl-min.app" --deep
+            run: codesign -s - -f "./build/release/${{ env.PROJECT_NAME }}.app" --deep
           - name: Create DMG
             run: | 
                 cd build
@@ -86,5 +110,5 @@ jobs:
           - name: Upload Build
             uses: actions/upload-artifact@v4
             with: 
-                name: sdl-min-apple-${{ matrix.target }}
+                name: ${{ env.PROJECT_NAME }}-apple-${{ matrix.target }}
                 path: build/*.dmg
