@@ -15,6 +15,9 @@
         }
     ],
 
+    "orientation": "landscape",
+    "window-mode": "fullscreen",
+
     "icon-path": "assets/icons/icon.png",
     "assets-path": "assets",
     "resources-path": "resources",
