@@ -133,55 +133,60 @@ endif()
 
 # Dealing with assets
 # We have some non-code resources that our application needs in order to work. How we deal with those differs per platform.
+set(ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/assets")
+
+# Collect all files in the assets folder (recursively)
+file(GLOB_RECURSE ASSETS "${ASSETS_DIR}/*")
+
 if (APPLE)
-    # on Apple targets, the application bundle has a "resources" subfolder where we can place our assets.
-    # SDL_GetBasePath() gives us easy access to that location.
-    set(input_root "${CMAKE_CURRENT_LIST_DIR}/assets")
-    macro(add_resource FILE)
-        file(RELATIVE_PATH relpath "${input_root}" "${FILE}")
-        get_filename_component(relpath "${relpath}" DIRECTORY)
-        target_sources(${EXECUTABLE_NAME} PRIVATE ${FILE})
-        set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
-    endmacro()
-    add_resource("${CMAKE_CURRENT_LIST_DIR}/assets/Inter-VariableFont.ttf")
-    add_resource("${CMAKE_CURRENT_LIST_DIR}/assets/the_entertainer.ogg")
-    add_resource("${CMAKE_CURRENT_LIST_DIR}/assets/gs_tiger.svg")
+    # On Apple, put everything into the app bundle Resources folder
+    foreach(asset ${ASSETS})
+        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        target_sources(${EXECUTABLE_NAME} PRIVATE ${asset})
+        set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
+    endforeach()
+
 elseif(EMSCRIPTEN)
-    # on the web, we have to put the files inside of the webassembly
-    # somewhat unintuitively, this is done via a linker argument.
-    target_link_libraries(${EXECUTABLE_NAME} PRIVATE 
-        "--preload-file \"${CMAKE_CURRENT_LIST_DIR}/assets/Inter-VariableFont.ttf@/\""
-        "--preload-file \"${CMAKE_CURRENT_LIST_DIR}/assets/the_entertainer.ogg@/\""
-        "--preload-file \"${CMAKE_CURRENT_LIST_DIR}/assets/gs_tiger.svg@/\""
-    )
+    # Preload all assets into the web build
+    foreach(asset ${ASSETS})
+        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+        target_link_libraries(${EXECUTABLE_NAME} PRIVATE
+            "--preload-file \"${asset}@/${relpath}\""
+        )
+    endforeach()
+
 else()
     if (ANDROID)
         if (NOT MOBILE_ASSETS_DIR)
             message(FATAL_ERROR "Building for Android, but MOBILE_ASSETS_DIR is not set")
         endif()
-        file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}")    # we need to create the project Assets dir otherwise CMake won't copy our assets.
+        file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}")
     endif()
 
-    
-    macro(copy_helper filename)
+    foreach(asset ${ASSETS})
+        file(RELATIVE_PATH relpath "${ASSETS_DIR}" "${asset}")
+
         if (ANDROID)
-            # MOBILE_ASSETS_DIR is set in the gradle file via the cmake command line and points to the Android Studio Assets folder. 
-            # when we copy assets there, the Android build pipeline knows to add them to the apk. 
-            set(outname "${MOBILE_ASSETS_DIR}/${filename}")    
+            set(outname "${MOBILE_ASSETS_DIR}/${relpath}")
         else()
-            # for platforms that do not have a good packaging format, all we can do is copy the assets to the process working directory.
-            set(outname "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${filename}")
+            set(outname "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${relpath}")
         endif()
+
+        # Ensure target directory exists
         add_custom_command(POST_BUILD
             TARGET "${EXECUTABLE_NAME}"
-		    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/assets/${filename}" "${outname}"
-		    DEPENDS "${filename}"
-	    )
-    endmacro()
-    copy_helper("Inter-VariableFont.ttf")
-    copy_helper("the_entertainer.ogg")
-    copy_helper("gs_tiger.svg")
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/${relpath}"
+        )
+
+        # Copy asset file
+        add_custom_command(POST_BUILD
+            TARGET "${EXECUTABLE_NAME}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${asset}" "${outname}"
+            DEPENDS "${asset}"
+        )
+    endforeach()
 endif()
+
 
 # set some extra configs for each platform
 set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
