@@ -15,7 +15,7 @@ jobs:
         run: |
           PROJECT_NAME=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
           PROJECT_VERSION=$(python3 -c "import json; print(json.load(open('assets/info.json'))['version'])")
-          PROJECT_RESOURCES=$(python3 -c "import json; print(json.load(open('assets/info.json'))['resources'])")
+          PROJECT_RESOURCES=$(python3 -c "import json; print(json.load(open('assets/info.json'))['resources-path'])")
           echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
           echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
           echo "PROJECT_RESOURCES=$PROJECT_RESOURCES" >> $GITHUB_ENV
