@@ -17,6 +17,7 @@ jobs:
                 submodules: recursive
           
           - name: Set project env vars
+            shell: bash
             run: |
               PROJECT_NAME=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
               PROJECT_VERSION=$(python3 -c "import json; print(json.load(open('assets/info.json'))['version'])")
