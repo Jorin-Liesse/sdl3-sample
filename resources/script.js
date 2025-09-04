@@ -1,13 +1,5 @@
-import GameModule from "./${PROJECT}.js";
+var canvasElement = document.querySelector("canvas");
 
-GameModule({
-  canvas: (function () {
-    const canvas = document.querySelector("canvas");
-    // Do some canvas setup
-
-    return canvas;
-  })(),
-})
-.then(Module => {
-  // Do something with the Module
-});
+var Module = {
+  canvas: canvasElement,
+};
