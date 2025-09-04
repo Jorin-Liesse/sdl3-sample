@@ -247,9 +247,9 @@ endif()
 
 
 # set some extra configs for each platform
-set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
+set(RESOURCE_FILES ${JSON_ICON_PATH})
 if(IOS)
-    set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/resources/iosLaunchScreen.storyboard;${CMAKE_CURRENT_LIST_DIR}/assets/logo.png") # make the splash screen show up on iOS
+    set(RESOURCE_FILES ${JSON_RESOURCES_PATH}/iosLaunchScreen.storyboard;${JSON_ICON_PATH}) # make the splash screen show up on iOS
 endif()
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
@@ -257,7 +257,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
     # Set the Info.plist file for Apple Mobile platforms. Without this file, your app
     # will not launch. 
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in"
+    MACOSX_BUNDLE_INFO_PLIST ${JSON_RESOURCES_PATH}/Info.plist.in
 
     # in Xcode, create a Scheme in the schemes dropdown for the app.
     XCODE_GENERATE_SCHEME TRUE
