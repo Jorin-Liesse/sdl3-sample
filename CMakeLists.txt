@@ -92,10 +92,10 @@ else()
 	add_executable(${EXECUTABLE_NAME})
 endif()
 
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${JSON_INCLUDE_PATH})
 
 # Automatically include all .cpp files in src/
-file(GLOB SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp")
+file(GLOB SOURCES ${JSON_SOURCE_PATH}/*.cpp)
 
 # Add manually extra files (e.g., platform-specific or non-.cpp files)
 if(ANDROID)
@@ -110,10 +110,10 @@ endif()
 list(APPEND SOURCES ${EXTRA_SOURCES})
 
 # Remove main.cpp if it’s already in the list
-list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+list(REMOVE_ITEM SOURCES ${JSON_SOURCE_PATH}/main.cpp)
 
 # Ensure main.cpp is first (important for Android)
-list(INSERT SOURCES 0 "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+list(INSERT SOURCES 0 ${JSON_SOURCE_PATH}/main.cpp)
 
 # Add them to your target
 target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
