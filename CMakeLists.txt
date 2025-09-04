@@ -40,38 +40,38 @@ endif()
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-# Add your sources to the target
-target_sources(${EXECUTABLE_NAME} 
-PRIVATE 
-    src/main.cpp
-    src/iosLaunchScreen.storyboard
-)
+# # Add your sources to the target
+# target_sources(${EXECUTABLE_NAME} 
+# PRIVATE 
+#     src/main.cpp
+#     src/iosLaunchScreen.storyboard
+# )
 
 # ----------------------------------------------
 
-# # Automatically include all .cpp files in src/
-# file(GLOB SOURCES "src/*.cpp")
+# Automatically include all .cpp files in src/
+file(GLOB SOURCES "src/*.cpp")
 
-# # Add manually extra files (e.g., platform-specific or non-.cpp files)
-# if(ANDROID)
-#     set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
-# else()
-#     set(EXTRA_SOURCES
-#         src/iosLaunchScreen.storyboard
-#     )
-# endif()
+# Add manually extra files (e.g., platform-specific or non-.cpp files)
+if(ANDROID)
+    set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
+else()
+    set(EXTRA_SOURCES
+        src/iosLaunchScreen.storyboard
+    )
+endif()
 
-# # Combine them
-# list(APPEND SOURCES ${EXTRA_SOURCES})
+# Combine them
+list(APPEND SOURCES ${EXTRA_SOURCES})
 
-# # Remove main.cpp if it’s already in the list
-# list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+# Remove main.cpp if it’s already in the list
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
 
-# # Ensure main.cpp is first (important for Android)
-# list(INSERT SOURCES 0 "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+# Ensure main.cpp is first (important for Android)
+list(INSERT SOURCES 0 "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
 
-# # Add them to your target
-# target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
+# Add them to your target
+target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 
 # ----------------------------------------------
 
