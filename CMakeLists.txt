@@ -131,7 +131,7 @@ if(APPLE)
 endif()
 
 # Set C++ version
-target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_20)
+target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
 
 # on Web targets, we need CMake to generate a HTML webpage. 
 if(EMSCRIPTEN)
