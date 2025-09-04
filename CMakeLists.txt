@@ -32,6 +32,8 @@ if (ANDROID)
 	# The SDL java code is hardcoded to load libmain.so on android, so we need to change EXECUTABLE_NAME
 	set(EXECUTABLE_NAME main)
 	add_library(${EXECUTABLE_NAME} SHARED)
+elseif(WIN32)
+    add_executable(${EXECUTABLE_NAME} WIN32)
 else()
 	add_executable(${EXECUTABLE_NAME})
 endif()
@@ -39,11 +41,11 @@ endif()
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 # Add your sources to the target
-target_sources(${EXECUTABLE_NAME} 
-PRIVATE 
-    src/main.cpp
-    src/iosLaunchScreen.storyboard
-)
+# target_sources(${EXECUTABLE_NAME} 
+# PRIVATE 
+#     src/main.cpp
+#     src/iosLaunchScreen.storyboard
+# )
 
 # Automatically include all .cpp files in src/
 file(GLOB SOURCES "src/*.cpp")
