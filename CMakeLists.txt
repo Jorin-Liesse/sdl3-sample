@@ -41,7 +41,7 @@ endif()
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 # Automatically include all .cpp files in src/
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp")
 
 # Add manually extra files (e.g., platform-specific or non-.cpp files)
 if(ANDROID)
@@ -73,7 +73,7 @@ target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 # To get an app icon on Apple platforms, add it to your executable.
 # Afterward, the image file in Info.plist.in.
 if(APPLE)
-    target_sources("${EXECUTABLE_NAME}" PRIVATE "src/logo.png")
+    target_sources("${EXECUTABLE_NAME}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}/src/logo.png")
 endif()
 
 # Set C++ version
@@ -184,9 +184,9 @@ else()
 endif()
 
 # set some extra configs for each platform
-set(RESOURCE_FILES "src/logo.png")
+set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/src/logo.png")
 if(IOS)
-    set(RESOURCE_FILES "src/iosLaunchScreen.storyboard;src/logo.png") # make the splash screen show up on iOS
+    set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/src/iosLaunchScreen.storyboard;${CMAKE_CURRENT_LIST_DIR}/src/logo.png") # make the splash screen show up on iOS
 endif()
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
