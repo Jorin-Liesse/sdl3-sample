@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 #-------------------------------------------------------
 
-file(READ "${CMAKE_CURRENT_LIST_DIR}/assets/info.json" JSON_CONTENT)
+file(READ ${CMAKE_CURRENT_LIST_DIR}/assets/info.json JSON_CONTENT)
 
 # Extract project name
 string(REGEX MATCH "\"project\"[ \t]*:[ \t]*\"([^\"]+)\"" _ MATCH_NAME ${JSON_CONTENT})
@@ -56,14 +56,14 @@ set(JSON_SOURCE_PATH ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_MATCH_1})
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIGURATION>)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIGURATION>)
 
 # prevent installing to system directories. 
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE INTERNAL "")
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR} CACHE INTERNAL "")
 
 # Declare the project
-project(sdl-min)
+project(${JSON_PROJECT} VERSION ${JSON_VERSION} LANGUAGES CXX)
 
 if ((APPLE AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin") OR EMSCRIPTEN)
     set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")    # Disable shared builds on platforms where it does not make sense to use them
