@@ -58,6 +58,28 @@ set(EXTRA_SOURCES
 # Combine them
 list(APPEND SOURCES ${EXTRA_SOURCES})
 
+list(INSERT SOURCES 0 "src/main.cpp")
+
+# Add them to your target
+target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
+
+# Automatically include all .cpp files in src/
+file(GLOB SOURCES "src/*.cpp")
+
+# Add manually extra files (e.g., platform-specific or non-.cpp files)
+set(EXTRA_SOURCES
+    src/iosLaunchScreen.storyboard
+)
+
+# Combine them
+list(APPEND SOURCES ${EXTRA_SOURCES})
+
+# Remove main.cpp if it’s already in the list
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+
+# Ensure main.cpp is first (important for Android)
+list(INSERT SOURCES 0 "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
+
 # Add them to your target
 target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 
