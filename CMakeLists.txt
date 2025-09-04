@@ -48,7 +48,7 @@ if(ANDROID)
     set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
 else()
     set(EXTRA_SOURCES
-        src/iosLaunchScreen.storyboard
+        resources/iosLaunchScreen.storyboard
     )
 endif()
 
@@ -191,7 +191,7 @@ endif()
 # set some extra configs for each platform
 set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
 if(IOS)
-    set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/src/iosLaunchScreen.storyboard;${CMAKE_CURRENT_LIST_DIR}/assets/logo.png") # make the splash screen show up on iOS
+    set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/resources/iosLaunchScreen.storyboard;${CMAKE_CURRENT_LIST_DIR}/assets/logo.png") # make the splash screen show up on iOS
 endif()
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
@@ -199,7 +199,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
     # Set the Info.plist file for Apple Mobile platforms. Without this file, your app
     # will not launch. 
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist.in"
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in"
 
     # in Xcode, create a Scheme in the schemes dropdown for the app.
     XCODE_GENERATE_SCHEME TRUE
