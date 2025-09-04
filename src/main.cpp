@@ -22,11 +22,11 @@ SDL_AppResult SDL_Fail()
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
-// #if __ANDROID__
-    // SDL_SetHint(SDL_HINT_ANDROID_BLOCK_ON_PAUSE, "1");
-    // SDL_SetHint(SDL_HINT_ANDROID_TRAP_BACK_BUTTON, "1");
-    // SDL_SetHint(SDL_HINT_VIDEO_ANDROID_WINDOW_FULLSCREEN, "1");
-// #endif
+#if __ANDROID__
+    SDL_SetHint(SDL_HINT_ANDROID_BLOCK_ON_PAUSE, "1");
+    SDL_SetHint(SDL_HINT_ANDROID_TRAP_BACK_BUTTON, "1");
+    SDL_SetHint(SDL_HINT_VIDEO_ANDROID_WINDOW_FULLSCREEN, "1");
+#endif
 
     // init the library, here we make a window so we only need the Video capabilities.
     if (not SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
@@ -54,7 +54,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_Fail();
     }
 
-    // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    // SDL_SetWindowFullscreen(window, SDL_TRUE);
 
     // create a renderer
     SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL);

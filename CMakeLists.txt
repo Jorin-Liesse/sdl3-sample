@@ -40,15 +40,6 @@ endif()
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-# # Add your sources to the target
-# target_sources(${EXECUTABLE_NAME} 
-# PRIVATE 
-#     src/main.cpp
-#     src/iosLaunchScreen.storyboard
-# )
-
-# ----------------------------------------------
-
 # Automatically include all .cpp files in src/
 file(GLOB SOURCES "src/*.cpp")
 
@@ -72,8 +63,6 @@ list(INSERT SOURCES 0 "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
 
 # Add them to your target
 target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
-
-# ----------------------------------------------
 
 # What is iosLaunchScreen.storyboard? This file describes what Apple's mobile platforms
 # should show the user while the application is starting up. If you don't include one,
