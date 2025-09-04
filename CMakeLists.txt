@@ -115,8 +115,6 @@ list(REMOVE_ITEM SOURCES ${JSON_SOURCE_PATH}/main.cpp)
 # Ensure main.cpp is first (important for Android)
 list(INSERT SOURCES 0 ${JSON_SOURCE_PATH}/main.cpp)
 
-#----#
-
 # Add them to your target
 target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 
@@ -129,7 +127,7 @@ target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 # To get an app icon on Apple platforms, add it to your executable.
 # Afterward, the image file in Info.plist.in.
 if(APPLE)
-    target_sources("${EXECUTABLE_NAME}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
+    target_sources(${EXECUTABLE_NAME} PRIVATE ${JSON_ICON_PATH})
 endif()
 
 # Set C++ version
@@ -186,6 +184,8 @@ if (APPLE AND NOT BUILD_SHARED_LIBS)
     find_library(CF_LIB CoreFoundation REQUIRED)
     target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${CF_LIB} ${CT_LIB} ${IO_LIB} ${CS_LIB} ${CG_LIB})
 endif()
+
+#----#
 
 # Dealing with assets
 # We have some non-code resources that our application needs in order to work. How we deal with those differs per platform.

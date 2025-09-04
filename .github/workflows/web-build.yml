@@ -24,8 +24,9 @@ jobs:
       - name: Prepare for upload
         run: |
            mkdir _site
-           mv build/sdl-min.html _site/index.html
-           mv build/sdl-* _site/
+           mv build/*.js build/*.css build/*.data build/*.wasm _site/
+          #  mv build/sdl-min.html _site/index.html
+          #  mv build/sdl-* _site/
       - name: Fix permissions
         run: |
          chmod -c -R +rX "_site/" | while read line; do
