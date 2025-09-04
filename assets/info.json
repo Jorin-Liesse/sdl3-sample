@@ -1,6 +1,6 @@
 {
-    "project": "Sapodilla Games Engine",
-    "company": "Sapodilla Games",
+    "project": "SGE",
+    "company": "Sapodilla-Games",
     "version": "0.1.0",
     "description": "A simple game engine using SDL3",
     "author": "Jorin Liesse",
