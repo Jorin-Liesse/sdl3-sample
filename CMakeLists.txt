@@ -178,9 +178,9 @@ else()
 		    DEPENDS "${filename}"
 	    )
     endmacro()
-    copy_helper("assets/Inter-VariableFont.ttf")
-    copy_helper("assets/the_entertainer.ogg")
-    copy_helper("assets/gs_tiger.svg")
+    copy_helper("Inter-VariableFont.ttf")
+    copy_helper("the_entertainer.ogg")
+    copy_helper("gs_tiger.svg")
 endif()
 
 # set some extra configs for each platform
