@@ -1,0 +1,59 @@
+name: Build for Desktop
+on: [workflow_dispatch]
+
+jobs:
+    build-win:
+        name: Build for Windows
+        runs-on: windows-latest
+        strategy:
+          fail-fast: false
+          matrix:
+              arch: [x64, ARM64]
+              target: [Windows]
+
+        steps:
+          - uses: actions/checkout@v4
+            with:
+                submodules: recursive
+          
+          - name: Set project env vars
+            shell: bash
+            run: |
+              ICON_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['icon-path'])")
+              PROJECT=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              RESOURCES_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['resources-path'])")
+              echo "ICON_PATH=$ICON_PATH" >> $GITHUB_ENV
+              echo "PROJECT=$PROJECT" >> $GITHUB_ENV
+              echo "RESOURCES_PATH=$RESOURCES_PATH" >> $GITHUB_ENV
+
+          # - name: Replace placeholders with env vars
+          #   shell: bash
+          #   run: |
+          #     export ICON_PATH="${{ env.RESOURCES_PATH }}/icon.ico"
+
+          #     for file in ${{ env.RESOURCES_PATH }}/appicon.rc; do
+          #       envsubst < "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+          #     done
+
+          # - name: Install ImageMagick
+          #   run: choco install imagemagick --yes
+
+          # - name: Create Windows Icon
+          #   run: |
+          #     magick convert ${{ env.ICON_PATH }} -define icon:auto-resize="16,32,48,256" ${{ env.RESOURCES_PATH }}/icon.ico
+
+          - name: Configure
+            run: cmake -DCMAKE_SYSTEM_NAME=${{ matrix.target }} -DCMAKE_SYSTEM_VERSION="10.0" -A${{ matrix.arch }} -S . -B build
+          - name: Build
+            run: cmake --build build --target ${{ env.PROJECT }} --config Release
+          - name: Upload Build
+            uses: actions/upload-artifact@v4
+            if: ${{ matrix.target != 'WindowsStore' }}
+            with: 
+                name: ${{ env.PROJECT }}-${{ matrix.target }}-${{ matrix.arch }}
+                path: |
+                    build/Release/*.exe
+                    build/Release/*.dll
+                    build/Release/*.ttf
+                    build/Release/*.ogg
+                    build/Release/*.svg
