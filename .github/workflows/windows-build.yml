@@ -1,4 +1,4 @@
-name: Build for Desktop
+name: Build for Windows
 on: [workflow_dispatch]
 
 jobs:
