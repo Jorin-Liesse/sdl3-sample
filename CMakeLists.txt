@@ -102,7 +102,7 @@ if(ANDROID)
     set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
 else()
     set(EXTRA_SOURCES
-        ${JSON_RESOURCES_PATH}/iosLaunchScreen.storyboard
+        resources/iosLaunchScreen.storyboard #----#
     )
 endif()
 
@@ -131,11 +131,11 @@ if(APPLE)
 endif()
 
 # Set C++ version
-target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
+target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_20)
 
 # on Web targets, we need CMake to generate a HTML webpage. 
 if(EMSCRIPTEN)
-	set(CMAKE_EXECUTABLE_SUFFIX ".js" CACHE INTERNAL "")
+	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 endif()
 
 # Configure SDL by calling its CMake file.
@@ -184,6 +184,8 @@ if (APPLE AND NOT BUILD_SHARED_LIBS)
     find_library(CF_LIB CoreFoundation REQUIRED)
     target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${CF_LIB} ${CT_LIB} ${IO_LIB} ${CS_LIB} ${CG_LIB})
 endif()
+
+#----#
 
 # Dealing with assets
 # We have some non-code resources that our application needs in order to work. How we deal with those differs per platform.
@@ -241,10 +243,13 @@ else()
     endforeach()
 endif()
 
+#----#
+
+
 # set some extra configs for each platform
-set(RESOURCE_FILES ${JSON_ICON_PATH})
+set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
 if(IOS)
-    set(RESOURCE_FILES ${JSON_RESOURCES_PATH}/iosLaunchScreen.storyboard;${JSON_ICON_PATH}) # make the splash screen show up on iOS
+    set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/resources/iosLaunchScreen.storyboard;${CMAKE_CURRENT_LIST_DIR}/assets/logo.png") # make the splash screen show up on iOS
 endif()
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
@@ -252,7 +257,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
     # Set the Info.plist file for Apple Mobile platforms. Without this file, your app
     # will not launch. 
-    MACOSX_BUNDLE_INFO_PLIST ${JSON_RESOURCES_PATH}/Info.plist.in
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in"
 
     # in Xcode, create a Scheme in the schemes dropdown for the app.
     XCODE_GENERATE_SCHEME TRUE
