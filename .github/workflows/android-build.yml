@@ -19,13 +19,24 @@ jobs:
         run:  |
                cp build.gradle SDL/android-project/app/
 
-      - name: Build the APK
+      - name: Build the Release APK
         run: |
-              cd SDL/android-project/
-              ./gradlew assembleDebug
+          cd SDL/android-project/
+          ./gradlew assembleRelease
 
-      - name: Upload the APK
+      - name: Upload the Release APK
         uses: actions/upload-artifact@v4
-        with: 
-          name: app-debug.apk
-          path: SDL/android-project/app/build/outputs/apk/debug/app-debug.apk
+        with:
+          name: app-release.apk
+          path: SDL/android-project/app/build/outputs/apk/release/app-release-unsigned.apk
+
+      # - name: Build the APK
+      #   run: |
+      #         cd SDL/android-project/
+      #         ./gradlew assembleDebug
+
+      # - name: Upload the APK
+      #   uses: actions/upload-artifact@v4
+      #   with: 
+      #     name: app-debug.apk
+      #     path: SDL/android-project/app/build/outputs/apk/debug/app-debug.apk

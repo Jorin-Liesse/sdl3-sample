@@ -214,7 +214,7 @@ else()
         if (NOT MOBILE_ASSETS_DIR)
             message(FATAL_ERROR "Building for Android, but MOBILE_ASSETS_DIR is not set")
         endif()
-        file(MAKE_DIRECTORY ${MOBILE_ASSETS_DIR})
+        file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}")
     endif()
 
     foreach(asset ${ASSETS})
@@ -235,7 +235,7 @@ else()
         # Copy asset file
         add_custom_command(POST_BUILD
             TARGET ${EXECUTABLE_NAME}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} ${outname}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} "${outname}"
             DEPENDS ${asset}
         )
     endforeach()
@@ -259,12 +259,12 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     # Identification for Xcode
     XCODE_ATTRIBUTE_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
 	XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
-	XCODE_ATTRIBUTE_CURRENTYEAR ${CURRENTYEAR}
-    RESOURCE ${RESOURCE_FILES}
+	XCODE_ATTRIBUTE_CURRENTYEAR "${CURRENTYEAR}"
+    RESOURCE "${RESOURCE_FILES}"
 )
 
 # on Visual Studio, set our app as the default project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${EXECUTABLE_NAME})
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT "${EXECUTABLE_NAME}")
 
 # On macOS Platforms, ensure that the bundle is valid for distribution by calling fixup_bundle.
 # note that fixup_bundle does not work on iOS, so you will want to use static libraries 
@@ -276,7 +276,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
    	    RUNTIME DESTINATION ./install/bin COMPONENT Runtime
     )
 	
-    set(DEP_DIR ${CMAKE_BINARY_DIR})  # where to look for dependencies when fixing up
+    set(DEP_DIR "${CMAKE_BINARY_DIR}")  # where to look for dependencies when fixing up
     INSTALL(CODE 
         "include(BundleUtilities)
         fixup_bundle(\"$<TARGET_BUNDLE_DIR:${EXECUTABLE_NAME}>\" \"\" \"${DEP_DIR}\")
