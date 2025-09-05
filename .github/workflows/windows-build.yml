@@ -26,21 +26,21 @@ jobs:
               echo "PROJECT=$PROJECT" >> $GITHUB_ENV
               echo "RESOURCES_PATH=$RESOURCES_PATH" >> $GITHUB_ENV
 
-          # - name: Replace placeholders with env vars
-          #   shell: bash
-          #   run: |
-          #     export ICON_PATH="${{ env.RESOURCES_PATH }}/icon.ico"
+          - name: Replace placeholders with env vars
+            shell: bash
+            run: |
+              export ICON_PATH="${{ env.RESOURCES_PATH }}/icon.ico"
 
-          #     for file in ${{ env.RESOURCES_PATH }}/appicon.rc; do
-          #       envsubst < "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-          #     done
+              for file in ${{ env.RESOURCES_PATH }}/appicon.rc; do
+                envsubst < "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+              done
 
-          # - name: Install ImageMagick
-          #   run: choco install imagemagick --yes
+          - name: Install ImageMagick
+            run: choco install imagemagick --yes
 
-          # - name: Create Windows Icon
-          #   run: |
-          #     magick convert ${{ env.ICON_PATH }} -define icon:auto-resize="16,32,48,256" ${{ env.RESOURCES_PATH }}/icon.ico
+          - name: Create Windows Icon
+            run: |
+              magick convert ${{ env.ICON_PATH }} -define icon:auto-resize="16,32,48,256" ${{ env.RESOURCES_PATH }}/icon.ico
 
           - name: Configure
             run: cmake -DCMAKE_SYSTEM_NAME=${{ matrix.target }} -DCMAKE_SYSTEM_VERSION="10.0" -A${{ matrix.arch }} -S . -B build
@@ -52,6 +52,8 @@ jobs:
             with: 
                 name: ${{ env.PROJECT }}-${{ matrix.target }}-${{ matrix.arch }}
                 path: |
+                    ${{ env.RESOURCES_PATH }}/appicon.rc
+                    ${{ env.RESOURCES_PATH }}/icon.ico
                     build/Release/*.exe
                     build/Release/*.dll
                     build/Release/*.ttf
