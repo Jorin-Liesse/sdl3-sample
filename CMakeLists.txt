@@ -102,7 +102,7 @@ if(ANDROID)
     set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
 else()
     set(EXTRA_SOURCES
-        resources/iosLaunchScreen.storyboard #----#
+        ${JSON_RESOURCES_PATH}/iosLaunchScreen.storyboard
     )
 endif()
 
@@ -131,11 +131,11 @@ if(APPLE)
 endif()
 
 # Set C++ version
-target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_20)
+target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
 
 # on Web targets, we need CMake to generate a HTML webpage. 
 if(EMSCRIPTEN)
-	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
+	set(CMAKE_EXECUTABLE_SUFFIX ".js" CACHE INTERNAL "")
 endif()
 
 # Configure SDL by calling its CMake file.
@@ -185,8 +185,6 @@ if (APPLE AND NOT BUILD_SHARED_LIBS)
     target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${CF_LIB} ${CT_LIB} ${IO_LIB} ${CS_LIB} ${CG_LIB})
 endif()
 
-#----#
-
 # Dealing with assets
 # We have some non-code resources that our application needs in order to work. How we deal with those differs per platform.
 set(ASSETS_DIR ${JSON_ASSETS_PATH})
@@ -199,7 +197,7 @@ if (APPLE)
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
         target_sources(${EXECUTABLE_NAME} PRIVATE ${asset})
-        set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
+        set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION Resources/${relpath})
     endforeach()
 
 elseif(EMSCRIPTEN)
@@ -216,40 +214,37 @@ else()
         if (NOT MOBILE_ASSETS_DIR)
             message(FATAL_ERROR "Building for Android, but MOBILE_ASSETS_DIR is not set")
         endif()
-        file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}")
+        file(MAKE_DIRECTORY ${MOBILE_ASSETS_DIR})
     endif()
 
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
 
         if (ANDROID)
-            set(outname "${MOBILE_ASSETS_DIR}/${relpath}")
+            set(outname ${MOBILE_ASSETS_DIR}/${relpath})
         else()
-            set(outname "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${relpath}")
+            set(outname ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${relpath})
         endif()
 
         # Ensure target directory exists
         add_custom_command(POST_BUILD
             TARGET ${EXECUTABLE_NAME}
-            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/${relpath}"
+            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/${relpath}
         )
 
         # Copy asset file
         add_custom_command(POST_BUILD
             TARGET ${EXECUTABLE_NAME}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} "${outname}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} ${outname}
             DEPENDS ${asset}
         )
     endforeach()
 endif()
 
-#----#
-
-
 # set some extra configs for each platform
-set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/assets/logo.png")
+set(RESOURCE_FILES ${JSON_ICON_PATH})
 if(IOS)
-    set(RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/resources/iosLaunchScreen.storyboard;${CMAKE_CURRENT_LIST_DIR}/assets/logo.png") # make the splash screen show up on iOS
+    set(RESOURCE_FILES ${JSON_RESOURCES_PATH}/iosLaunchScreen.storyboard;${JSON_ICON_PATH}) # make the splash screen show up on iOS
 endif()
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
@@ -257,19 +252,19 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
     # Set the Info.plist file for Apple Mobile platforms. Without this file, your app
     # will not launch. 
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in"
+    MACOSX_BUNDLE_INFO_PLIST ${JSON_RESOURCES_PATH}/Info.plist.in
 
     # in Xcode, create a Scheme in the schemes dropdown for the app.
     XCODE_GENERATE_SCHEME TRUE
     # Identification for Xcode
     XCODE_ATTRIBUTE_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
 	XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
-	XCODE_ATTRIBUTE_CURRENTYEAR "${CURRENTYEAR}"
-    RESOURCE "${RESOURCE_FILES}"
+	XCODE_ATTRIBUTE_CURRENTYEAR ${CURRENTYEAR}
+    RESOURCE ${RESOURCE_FILES}
 )
 
 # on Visual Studio, set our app as the default project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT "${EXECUTABLE_NAME}")
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${EXECUTABLE_NAME})
 
 # On macOS Platforms, ensure that the bundle is valid for distribution by calling fixup_bundle.
 # note that fixup_bundle does not work on iOS, so you will want to use static libraries 
