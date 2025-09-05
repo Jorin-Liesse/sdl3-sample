@@ -102,7 +102,7 @@ if(ANDROID)
     set(EXTRA_SOURCES "")  # Android cannot compile .storyboard
 else()
     set(EXTRA_SOURCES
-        ${RESOURCES_PATH}/iosLaunchScreen.storyboard
+        ${JSON_RESOURCES_PATH}/iosLaunchScreen.storyboard
     )
 endif()
 
