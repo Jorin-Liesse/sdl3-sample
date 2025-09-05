@@ -27,6 +27,7 @@ jobs:
               echo "RESOURCES_PATH=$RESOURCES_PATH" >> $GITHUB_ENV
 
           - name: Replace placeholders with env vars
+            shell: bash
             run: |
               export ICON_PATH="${{ env.RESOURCES_PATH }}/icon.ico"
 
@@ -51,7 +52,6 @@ jobs:
             with: 
                 name: ${{ env.PROJECT }}-${{ matrix.target }}-${{ matrix.arch }}
                 path: |
-                    ${{ env.RESOURCES_PATH }}/appicon.rc
                     build/Release/*.exe
                     build/Release/*.dll
                     build/Release/*.ttf
