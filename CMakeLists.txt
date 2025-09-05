@@ -197,7 +197,7 @@ if (APPLE)
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
         target_sources(${EXECUTABLE_NAME} PRIVATE ${asset})
-        set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION Resources/${relpath})
+        set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
     endforeach()
 
 elseif(EMSCRIPTEN)
@@ -214,28 +214,28 @@ else()
         if (NOT MOBILE_ASSETS_DIR)
             message(FATAL_ERROR "Building for Android, but MOBILE_ASSETS_DIR is not set")
         endif()
-        file(MAKE_DIRECTORY ${MOBILE_ASSETS_DIR})
+        file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}")
     endif()
 
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
 
         if (ANDROID)
-            set(outname ${MOBILE_ASSETS_DIR}/${relpath})
+            set(outname "${MOBILE_ASSETS_DIR}/${relpath}")
         else()
-            set(outname ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${relpath})
+            set(outname "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${relpath}")
         endif()
 
         # Ensure target directory exists
         add_custom_command(POST_BUILD
             TARGET ${EXECUTABLE_NAME}
-            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/${relpath}
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/${relpath}"
         )
 
         # Copy asset file
         add_custom_command(POST_BUILD
             TARGET ${EXECUTABLE_NAME}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} ${outname}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} "${outname}"
             DEPENDS ${asset}
         )
     endforeach()
@@ -259,12 +259,12 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     # Identification for Xcode
     XCODE_ATTRIBUTE_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
 	XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
-	XCODE_ATTRIBUTE_CURRENTYEAR ${CURRENTYEAR}
-    RESOURCE ${RESOURCE_FILES}
+	XCODE_ATTRIBUTE_CURRENTYEAR "${CURRENTYEAR}"
+    RESOURCE "${RESOURCE_FILES}"
 )
 
 # on Visual Studio, set our app as the default project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${EXECUTABLE_NAME})
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT "${EXECUTABLE_NAME}")
 
 # On macOS Platforms, ensure that the bundle is valid for distribution by calling fixup_bundle.
 # note that fixup_bundle does not work on iOS, so you will want to use static libraries 
