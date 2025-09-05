@@ -132,11 +132,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         int width, height, bbwidth, bbheight;
         SDL_GetWindowSize(window, &width, &height);
         SDL_GetWindowSizeInPixels(window, &bbwidth, &bbheight);
-        SDL_Log("Window size: %ix%i", width, height);
-        SDL_Log("Backbuffer size: %ix%i", bbwidth, bbheight);
+        // SDL_Log("Window size: %ix%i", width, height);
+        // SDL_Log("Backbuffer size: %ix%i", bbwidth, bbheight);
         if (width != bbwidth)
         {
-            SDL_Log("This is a highdpi environment.");
+            // SDL_Log("This is a highdpi environment.");
         }
     }
 
@@ -152,7 +152,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 
     SDL_SetRenderVSync(renderer, -1); // enable vysnc
 
-    SDL_Log("Application started successfully!");
+    // SDL_Log("Application started successfully!");
 
     return SDL_APP_CONTINUE;
 }
@@ -210,6 +210,6 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result)
     TTF_Quit();
     MIX_Quit();
 
-    SDL_Log("Application quit successfully!");
+    // SDL_Log("Application quit successfully!");
     SDL_Quit();
 }
