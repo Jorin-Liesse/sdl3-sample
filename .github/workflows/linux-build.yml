@@ -14,8 +14,20 @@ jobs:
             run: |
               ICON_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['icon-path'])")
               PROJECT=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              RESOURCES_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['resources-path'])")
               echo "ICON_PATH=$ICON_PATH" >> $GITHUB_ENV
               echo "PROJECT=$PROJECT" >> $GITHUB_ENV
+              echo "RESOURCES_PATH=$RESOURCES_PATH" >> $GITHUB_ENV
+
+          - name: Replace placeholders with env vars
+            run: |
+              # Export all workflow env vars to shell
+              export PROJECT="${{ env.PROJECT }}"
+
+              # Replace placeholders in all relevant files
+              for file in ${{ env.RESOURCES_PATH }}/${{ env.PROJECT }}.desktop.in; do
+                envsubst < "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+              done
 
           - name: Install Dependencies
             run: |
@@ -30,6 +42,7 @@ jobs:
             with: 
                 name: ${{ env.PROJECT }}-Linux
                 path: |
+                    ${{ env.RESOURCES_PATH }}/${{ env.PROJECT }}.desktop.in
                     build/Release/${{ env.PROJECT }}
                     build/Release/*.so
                     build/Release/*.ttf

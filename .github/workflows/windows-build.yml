@@ -26,15 +26,6 @@ jobs:
               echo "PROJECT=$PROJECT" >> $GITHUB_ENV
               echo "RESOURCES_PATH=$RESOURCES_PATH" >> $GITHUB_ENV
 
-          # - name: Replace placeholders with env vars
-          #   shell: bash
-          #   run: |
-          #     export ICON_PATH="${{ env.RESOURCES_PATH }}/icon.ico"
-
-          #     for file in ${{ env.RESOURCES_PATH }}/appicon.rc; do
-          #       envsubst < "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-          #     done
-
           - name: Install ImageMagick
             run: choco install imagemagick --yes
 
