@@ -42,7 +42,6 @@ jobs:
             with: 
                 name: ${{ env.PROJECT }}-Linux
                 path: |
-                    ${{ env.RESOURCES_PATH }}/${{ env.PROJECT }}.desktop.in
                     build/Release/${{ env.PROJECT }}
                     build/Release/*.so
                     build/Release/*.ttf

@@ -43,8 +43,6 @@ jobs:
             with: 
                 name: ${{ env.PROJECT }}-${{ matrix.target }}-${{ matrix.arch }}
                 path: |
-                    ${{ env.RESOURCES_PATH }}/appicon.rc
-                    ${{ env.RESOURCES_PATH }}/icon.ico
                     build/Release/*.exe
                     build/Release/*.dll
                     build/Release/*.ttf
