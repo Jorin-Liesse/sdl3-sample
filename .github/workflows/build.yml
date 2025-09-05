@@ -19,8 +19,18 @@ jobs:
           - name: Set project env vars
             shell: bash
             run: |
+              ICON_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['icon-path'])")
               PROJECT=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              echo "ICON_PATH=$ICON_PATH" >> $GITHUB_ENV
               echo "PROJECT=$PROJECT" >> $GITHUB_ENV
+
+          - name: Replace placeholders with env vars
+            run: |
+              export ICON_PATH="${{ env.ICON_PATH }}"
+
+              for file in ${{ env.ICON_PATH }}/appicon.rc; do
+                envsubst < "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+              done
 
           - name: Configure
             run: cmake -DCMAKE_SYSTEM_NAME=${{ matrix.target }} -DCMAKE_SYSTEM_VERSION="10.0" -A${{ matrix.arch }} -S . -B build
@@ -32,6 +42,7 @@ jobs:
             with: 
                 name: ${{ env.PROJECT }}-${{ matrix.target }}-${{ matrix.arch }}
                 path: |
+                    ${{ env.ICON_PATH }}/appicon.rc
                     build/Release/*.exe
                     build/Release/*.dll
                     build/Release/*.ttf
@@ -48,7 +59,9 @@ jobs:
 
           - name: Set project env vars
             run: |
+              ICON_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['icon-path'])")
               PROJECT=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              echo "ICON_PATH=$ICON_PATH" >> $GITHUB_ENV
               echo "PROJECT=$PROJECT" >> $GITHUB_ENV
 
           - name: Install Dependencies
@@ -89,7 +102,9 @@ jobs:
 
           - name: Set project env vars
             run: |
+              ICON_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['icon-path'])")
               PROJECT=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              echo "ICON_PATH=$ICON_PATH" >> $GITHUB_ENV
               echo "PROJECT=$PROJECT" >> $GITHUB_ENV
 
           - name: Configure

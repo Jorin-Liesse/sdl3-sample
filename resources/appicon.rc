@@ -1,0 +1,2 @@
+#include "appicon.h"
+IDI_APP_ICON ICON ${ICON_PATH}
