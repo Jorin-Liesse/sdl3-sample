@@ -88,7 +88,7 @@ if(ANDROID)
     add_library(${EXECUTABLE_NAME} SHARED)
 elseif(WIN32)
     add_executable(${EXECUTABLE_NAME} WIN32)
-    # target_sources(${EXECUTABLE_NAME} PRIVATE ${JSON_RESOURCES_PATH}/appicon.rc)
+    target_sources(${EXECUTABLE_NAME} PRIVATE resources/appicon.rc)
 else()
     add_executable(${EXECUTABLE_NAME})
 endif()
@@ -217,29 +217,6 @@ else()
         endif()
         file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}")
     endif()
-
-    # foreach(asset ${ASSETS})
-    #     file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
-
-    #     if (ANDROID)
-    #         set(outname "${MOBILE_ASSETS_DIR}/${relpath}")
-    #     else()
-    #         set(outname "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${relpath}")
-    #     endif()
-
-    #     # Ensure target directory exists
-    #     add_custom_command(POST_BUILD
-    #         TARGET ${EXECUTABLE_NAME}
-    #         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/${relpath}"
-    #     )
-
-    #     # Copy asset file
-    #     add_custom_command(POST_BUILD
-    #         TARGET ${EXECUTABLE_NAME}
-    #         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset} "${outname}"
-    #         DEPENDS ${asset}
-    #     )
-    # endforeach()
 
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
