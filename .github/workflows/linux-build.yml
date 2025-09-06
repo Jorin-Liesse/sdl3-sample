@@ -14,9 +14,11 @@ jobs:
             run: |
               ICON_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['icon-path'])")
               PROJECT=$(python3 -c "import json; print(json.load(open('assets/info.json'))['project'])")
+              ASSETS_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['assets-path'])")
               RESOURCES_PATH=$(python3 -c "import json; print(json.load(open('assets/info.json'))['resources-path'])")
               echo "ICON_PATH=$ICON_PATH" >> $GITHUB_ENV
               echo "PROJECT=$PROJECT" >> $GITHUB_ENV
+              echo "ASSETS_PATH=$ASSETS_PATH" >> $GITHUB_ENV
               echo "RESOURCES_PATH=$RESOURCES_PATH" >> $GITHUB_ENV
 
           - name: Replace placeholders with env vars
@@ -37,13 +39,20 @@ jobs:
             run: cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -S . -B build
           - name: Build
             run: cmake --build build --target ${{ env.PROJECT }} --config Release
+
+          - name: Copy Assets
+            run: |
+              mkdir -p build/Release/assets
+              cp -r "${{ env.ASSETS_PATH }}"/* build/Release/${{ env.ASSETS_PATH }}
+
           - name: Upload Build
             uses: actions/upload-artifact@v4
             with: 
                 name: ${{ env.PROJECT }}-Linux
                 path: |
-                    build/Release/${{ env.PROJECT }}
-                    build/Release/*.so
-                    build/Release/*.ttf
-                    build/Release/*.ogg
-                    build/Release/*.svg
+                    build/Release/${{ env.ASSETS_PATH }}
+                    build/Release/${{ env.PROJECT }}.exe
+                    build/Release/SDL3.so
+                    build/Release/SDL3_image.so
+                    build/Release/SDL3_mixer.so
+                    build/Release/SDL3_ttf.so
