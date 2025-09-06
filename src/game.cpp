@@ -171,33 +171,32 @@ void Game::TestInit()
     TTF_Font *font = TTF_OpenFont(fontPath.string().c_str(), 36);
     const std::string_view text = "Hello SDL!";
     SDL_Surface *surfaceMessage = TTF_RenderText_Solid(font, text.data(), text.length(), {255, 255, 255});
-    SDL_Texture *messageTex = SDL_CreateTextureFromSurface(m_renderer, surfaceMessage);
-    TTF_CloseFont(font);
-    SDL_DestroySurface(surfaceMessage);
-
-    auto messageTexProps = SDL_GetTextureProperties(messageTex);
-    SDL_FRect text_rect{
+    m_messageTex = SDL_CreateTextureFromSurface(m_renderer, surfaceMessage);
+    auto messageTexProps = SDL_GetTextureProperties(m_messageTex);
+    m_messageDest = SDL_FRect{
         .x = 0,
         .y = 0,
         .w = float(SDL_GetNumberProperty(messageTexProps, SDL_PROP_TEXTURE_WIDTH_NUMBER, 0)),
         .h = float(SDL_GetNumberProperty(messageTexProps, SDL_PROP_TEXTURE_HEIGHT_NUMBER, 0))};
+    TTF_CloseFont(font);
+    SDL_DestroySurface(surfaceMessage);
 
     auto svg_surface = IMG_Load((basePath / "assets/gs_tiger.svg").string().c_str());
-    SDL_Texture *tex = SDL_CreateTextureFromSurface(m_renderer, svg_surface);
+    m_imageTex = SDL_CreateTextureFromSurface(m_renderer, svg_surface);
     SDL_DestroySurface(svg_surface);
 
 
-    MIX_Mixer *mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-    auto mixerTrack = MIX_CreateTrack(mixer);
+    m_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+    m_track = MIX_CreateTrack(m_mixer);
     auto musicPath = basePath / "assets/the_entertainer.ogg";
-    auto music = MIX_LoadAudio(mixer, musicPath.string().c_str(), false);
-    MIX_SetTrackAudio(mixerTrack, music);
-    MIX_PlayTrack(mixerTrack, NULL);
+    auto music = MIX_LoadAudio(m_mixer, musicPath.string().c_str(), false);
+    MIX_SetTrackAudio(m_track, music);
+    MIX_PlayTrack(m_track, NULL);
 }
 
 void Game::TestUpdate()
 {
-    m_time += SDL_GetTicks() / 1000.f;
+    m_time = SDL_GetTicks() / 1000.f;
     m_red = (sin(m_time) + 1) / 2.0 * 255;
     m_green = (sin(m_time / 2) + 1) / 2.0 * 255;
     m_blue = (sin(m_time) * 2 + 1) / 2.0 * 255;
