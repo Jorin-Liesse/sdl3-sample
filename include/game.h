@@ -24,7 +24,7 @@ namespace sge
         SDL_Window *GetWindow();
         SDL_Renderer *GetRenderer();
 
-        void ShowError(const std::string &title, const std::string &message);
+        void ShowError(const std::string &title, const std::string &message = "");
 
     private:
         bool LoadLibraries();

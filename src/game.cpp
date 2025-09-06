@@ -167,7 +167,7 @@ void Game::CreateRenderer()
 
 #pragma region Public Methods
 
-void Game::ShowError(const string &title, const string &message = "")
+void Game::ShowError(const string &title, const string &message)
 {
     if (not message.empty())
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), nullptr);
