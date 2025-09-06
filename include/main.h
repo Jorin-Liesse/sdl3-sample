@@ -12,6 +12,7 @@
 // #include <thread>
 
 #pragma once
+#define SDL_MAIN_USE_CALLBACKS
 #include "game.h"
 
 #include <SDL3/SDL.h>
