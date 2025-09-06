@@ -5,9 +5,9 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3_image/SDL_image.h>
 #include <string>
+
 #include <vector>
 #include <math.h>
-
 #include <filesystem>
 #include <string_view>
 #include <thread>

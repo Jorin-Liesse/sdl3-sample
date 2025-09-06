@@ -6,6 +6,8 @@ using namespace sge;
 
 #pragma endregion
 
+#pragma region Engine Methods
+
 SDL_AppResult SDL_Fail()
 {
     Game::GetInstance().ShowMessage("Error", SDL_GetError());
@@ -55,3 +57,5 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result)
     MIX_Quit();
     SDL_Quit();
 }
+
+#pragma endregion
