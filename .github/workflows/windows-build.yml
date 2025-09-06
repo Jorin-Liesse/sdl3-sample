@@ -43,8 +43,6 @@ jobs:
             with: 
                 name: ${{ env.PROJECT }}-${{ matrix.target }}-${{ matrix.arch }}
                 path: |
+                    assets
                     build/Release/*.exe
                     build/Release/*.dll
-                    build/Release/*.ttf
-                    build/Release/*.ogg
-                    build/Release/*.svg
