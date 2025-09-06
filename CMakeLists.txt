@@ -194,17 +194,19 @@ set(ASSETS_DIR ${JSON_ASSETS_PATH})
 file(GLOB_RECURSE ASSETS ${JSON_ASSETS_PATH}/*)
 
 if(APPLE)
-    # On Apple, put everything into the app bundle Resources folder
+    # On Apple, put everything into the app bundle Resources/assets folder
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
+        set(relpath "assets/${relpath}") # <--- put everything in assets/
         target_sources(${EXECUTABLE_NAME} PRIVATE ${asset})
         set_property(SOURCE ${asset} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
     endforeach()
 
 elseif(EMSCRIPTEN)
-    # Preload all assets into the web build
+    # Preload all assets into the web build under /assets
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
+        set(relpath "assets/${relpath}") # <--- put everything in assets/
         target_link_libraries(${EXECUTABLE_NAME} PRIVATE
             "--preload-file \"${asset}@/${relpath}\""
         )
@@ -215,11 +217,12 @@ else()
         if(NOT MOBILE_ASSETS_DIR)
             message(FATAL_ERROR "Building for Android, but MOBILE_ASSETS_DIR is not set")
         endif()
-        file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}")
+        file(MAKE_DIRECTORY "${MOBILE_ASSETS_DIR}/assets")
     endif()
 
     foreach(asset ${ASSETS})
         file(RELATIVE_PATH relpath ${JSON_ASSETS_PATH} ${asset})
+        set(relpath "assets/${relpath}") # <--- put everything in assets/
         get_filename_component(asset_dir "${relpath}" DIRECTORY)
 
         if(ANDROID)
@@ -228,7 +231,7 @@ else()
             set(outname "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${relpath}")
         endif()
 
-        # Ensure the directory exists (fix)
+        # Ensure the directory exists
         add_custom_command(POST_BUILD
             TARGET ${EXECUTABLE_NAME}
             COMMAND ${CMAKE_COMMAND} -E make_directory

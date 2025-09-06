@@ -74,7 +74,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     const std::filesystem::path basePath = basePathPtr;
 #endif
 
-    const auto fontPath = basePath / "Inter-VariableFont.ttf";
+    const auto fontPath = basePath / "assets/Inter-VariableFont.ttf";
     TTF_Font *font = TTF_OpenFont(fontPath.string().c_str(), 36);
     if (not font)
     {
@@ -93,7 +93,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     SDL_DestroySurface(surfaceMessage);
 
     // load the SVG
-    auto svg_surface = IMG_Load((basePath / "gs_tiger.svg").string().c_str());
+    auto svg_surface = IMG_Load((basePath / "assets/gs_tiger.svg").string().c_str());
     SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, svg_surface);
     SDL_DestroySurface(svg_surface);
 
@@ -115,7 +115,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     auto mixerTrack = MIX_CreateTrack(mixer);
 
     // load the music
-    auto musicPath = basePath / "the_entertainer.ogg";
+    auto musicPath = basePath / "assets/the_entertainer.ogg";
     auto music = MIX_LoadAudio(mixer, musicPath.string().c_str(), false);
     if (not music)
     {
