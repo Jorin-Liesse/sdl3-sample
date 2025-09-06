@@ -2,7 +2,6 @@
 
 #include "game.h"
 
-// using namespace sge::gameObjects;
 using namespace std;
 using namespace sge;
 
@@ -24,17 +23,18 @@ bool Game::Init()
     m_event = nullptr;
     m_window = nullptr;
     m_renderer = nullptr;
+    m_appResult = SDL_APP_CONTINUE;
+    m_mixer = nullptr;
 
-    m_running = true;
+    m_window = SDL_CreateWindow("SDL Minimal Sample", 500, 500, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+    m_renderer = SDL_CreateRenderer(m_window, NULL);
 
-    LoadLibraries();
+    m_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
 
-    // AssetsHandler::GetInstance().Init();
+    TestInit();
 
-    // m_infoDataId = AssetsHandler::GetInstance().UsedJson("assets/data/info.json");
-
-    CreateWindow();
-    CreateRenderer();
+    // SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN);
+    // SDL_SetRenderVSync(m_renderer, -1); // enable vysnc
 
     return true;
 }
@@ -46,6 +46,8 @@ void Game::Cleanup()
     if (m_window)
         SDL_DestroyWindow(m_window);
 
+    MIX_StopAllTracks(m_mixer, 0);
+
     MIX_Quit();
     TTF_Quit();
     SDL_Quit();
@@ -53,121 +55,45 @@ void Game::Cleanup()
     delete m_renderer;
     delete m_window;
     delete m_event;
+    delete m_mixer;
 }
 
 #pragma endregion
 
 #pragma region Engine Methods
 
-void Game::Run()
+void Game::Event()
 {
-    m_event = new SDL_Event();
+    if (not m_event)
+        return;
 
-#ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop_arg(
-        [](void *arg)
-        {
-            Game *game = static_cast<Game *>(arg);
-            if (game->m_running)
-            {
-                game->Update();
-                game->Render();
-            }
-            else
-            {
-                game->Cleanup();
-                emscripten_cancel_main_loop();
-            }
-        },
-        this,
-        0,
-        1);
-#else
-    while (m_running)
-    {
-        Update();
-        Render();
-    }
-
-    Cleanup();
-#endif
+    if (m_event->type == SDL_EVENT_QUIT)
+        Game::GetInstance().SetAppResult(SDL_APP_SUCCESS);
 }
 
 void Game::Update()
 {
-    while (SDL_PollEvent(m_event))
-    {
-        if (m_event->type == SDL_EVENT_QUIT)
-            m_running = false;
-    }
+    TestUpdate();
 }
 
 void Game::Render()
 {
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderClear(m_renderer);
+
+    TestRender();
+
     SDL_RenderPresent(m_renderer);
 }
 
 #pragma endregion
 
 #pragma region Private Methods
-
-bool Game::LoadLibraries()
-{
-    if (not SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
-    {
-        ShowError("SDL_Init Error");
-        return false;
-    }
-
-    if (not TTF_Init())
-    {
-        ShowError("TTF_Init Error");
-        SDL_Quit();
-        return false;
-    }
-
-    if (not MIX_Init())
-    {
-        ShowError("MIX_Init Error");
-        TTF_Quit();
-        SDL_Quit();
-        return false;
-    }
-
-    return true;
-}
-
-void Game::CreateWindow()
-{
-    // cJSON *infoJson = AssetsHandler::GetInstance().GetJson(m_infoDataId);
-    // string title = cJSON_GetStringValue(cJSON_GetObjectItem(infoJson, "title"));
-
-    m_window = SDL_CreateWindow("SDL Minimal Sample", 500, 500, SDL_WINDOW_HIGH_PIXEL_DENSITY);
-    if (not m_window)
-        ShowError("SDL_CreateWindow Error");
-
-    SDL_Surface *icon = IMG_Load("assets/icons/icon.png");
-    if (not icon)
-        ShowError("Icon Load Error");
-
-    SDL_SetWindowIcon(m_window, icon);
-    SDL_DestroySurface(icon);
-}
-
-void Game::CreateRenderer()
-{
-    m_renderer = SDL_CreateRenderer(m_window, NULL);
-    if (not m_renderer)
-        ShowError("SDL_CreateRenderer Error");
-}
-
 #pragma endregion
 
 #pragma region Public Methods
 
-void Game::ShowError(const string &title, const string &message)
+void Game::ShowMessage(const string &title, const string &message)
 {
     if (not message.empty())
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), nullptr);
@@ -183,9 +109,105 @@ SDL_Window *Game::GetWindow()
 {
     return m_window;
 }
+void Game::SetWindow(SDL_Window *window)
+{
+    m_window = window;
+}
+
 SDL_Renderer *Game::GetRenderer()
 {
     return m_renderer;
 }
+void Game::SetRenderer(SDL_Renderer *renderer)
+{
+    m_renderer = renderer;
+}
+
+SDL_Event *Game::GetEvent()
+{
+    return m_event;
+}
+void Game::SetEvent(SDL_Event *event)
+{
+    m_event = event;
+}
+
+SDL_AppResult Game::GetAppResult()
+{
+    return m_appResult;
+}
+void Game::SetAppResult(SDL_AppResult result)
+{
+    m_appResult = result;
+}
+
+MIX_Mixer *Game::GetMixer()
+{
+    return m_mixer;
+}
+void Game::SetMixer(MIX_Mixer *mixer)
+{
+    m_mixer = mixer;
+}
 
 #pragma endregion
+
+void Game::TestInit()
+{
+    m_time = 0;
+    m_red = 0;
+    m_green = 0;
+    m_blue = 0;
+
+    // load the font
+#if __ANDROID__
+    filesystem::path basePath = ""; // on Android we do not want to use basepath. Instead, assets are available at the root directory.
+#else
+    auto basePathPtr = SDL_GetBasePath();
+    const filesystem::path basePath = basePathPtr;
+#endif
+
+    const auto fontPath = basePath / "assets/Inter-VariableFont.ttf";
+    TTF_Font *font = TTF_OpenFont(fontPath.string().c_str(), 36);
+    const std::string_view text = "Hello SDL!";
+    SDL_Surface *surfaceMessage = TTF_RenderText_Solid(font, text.data(), text.length(), {255, 255, 255});
+    SDL_Texture *messageTex = SDL_CreateTextureFromSurface(m_renderer, surfaceMessage);
+    TTF_CloseFont(font);
+    SDL_DestroySurface(surfaceMessage);
+
+    auto messageTexProps = SDL_GetTextureProperties(messageTex);
+    SDL_FRect text_rect{
+        .x = 0,
+        .y = 0,
+        .w = float(SDL_GetNumberProperty(messageTexProps, SDL_PROP_TEXTURE_WIDTH_NUMBER, 0)),
+        .h = float(SDL_GetNumberProperty(messageTexProps, SDL_PROP_TEXTURE_HEIGHT_NUMBER, 0))};
+
+    auto svg_surface = IMG_Load((basePath / "assets/gs_tiger.svg").string().c_str());
+    SDL_Texture *tex = SDL_CreateTextureFromSurface(m_renderer, svg_surface);
+    SDL_DestroySurface(svg_surface);
+
+
+    MIX_Mixer *mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+    auto mixerTrack = MIX_CreateTrack(mixer);
+    auto musicPath = basePath / "assets/the_entertainer.ogg";
+    auto music = MIX_LoadAudio(mixer, musicPath.string().c_str(), false);
+    MIX_SetTrackAudio(mixerTrack, music);
+    MIX_PlayTrack(mixerTrack, NULL);
+}
+
+void Game::TestUpdate()
+{
+    m_time += SDL_GetTicks() / 1000.f;
+    m_red = (sin(m_time) + 1) / 2.0 * 255;
+    m_green = (sin(m_time / 2) + 1) / 2.0 * 255;
+    m_blue = (sin(m_time) * 2 + 1) / 2.0 * 255;
+}
+
+void Game::TestRender()
+{
+    SDL_SetRenderDrawColor(m_renderer, m_red, m_green, m_blue, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(m_renderer, nullptr);
+
+    SDL_RenderTexture(m_renderer, m_imageTex, NULL, NULL);
+    SDL_RenderTexture(m_renderer, m_messageTex, NULL, &m_messageDest);
+}
