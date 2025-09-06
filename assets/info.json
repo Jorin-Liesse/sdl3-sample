@@ -7,11 +7,11 @@
     "license": "MIT",
     "credits": [
         {
-            "name": "",
-            "author": "",
-            "website": "",
-            "license": "",
-            "link": ""
+            "name": "sdl3-sample",
+            "author": "Ravbug",
+            "website": "https://www.ravbug.com/",
+            "license": "CC0 1.0 Universal",
+            "link": "https://github.com/Ravbug/sdl3-sample"
         }
     ],
 
