@@ -52,10 +52,6 @@ jobs:
                 path: |
                     build/Release/${{ env.ASSETS_PATH }}
                     build/Release/${{ env.PROJECT }}
-                    build/Release/libSDL3.so
-                    build/Release/libSDL3_image.so
-                    build/Release/libSDL3_mixer.so
-                    build/Release/libSDL3_ttf.so
                     build/Release/libSDL3.so.0
                     build/Release/libSDL3_image.so.0
                     build/Release/libSDL3_mixer.so.0
